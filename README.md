@@ -4,7 +4,7 @@ A minimal multi-tenant SaaS inventory management app, built for the "Phase 1 –
 
 Users sign up with an organization, manage products (name, SKU, quantity, prices), adjust stock, and see a dashboard with an inventory summary and low-stock items. All data is scoped to the user's organization.
 
-**Live demo:** _add your deployed URL here_
+**Live demo:** https://stockflow-mvp-two-kappa.vercel.app
 
 ## Features (mapped to the PRD)
 
