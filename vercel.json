@@ -1,0 +1,4 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "installCommand": "unset npm_config_cache_dir NPM_CONFIG_CACHE_DIR; npm install"
+}
