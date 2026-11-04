@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Products · StockFlow</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body class="app" data-page="products">
+<div class="shell">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="scrim" id="scrim"></div>
+  <div class="main">
+    <header class="mobile-bar" id="mobile-bar"></header>
+    <main class="container">
+      <div class="page-head">
+        <div>
+          <p class="eyebrow" id="product-count">&nbsp;</p>
+          <h1>Products</h1>
+        </div>
+        <a class="btn btn-primary" href="/product.html"><span data-icon="plus" data-size="16"></span> Add product</a>
+      </div>
+
+      <section class="card flush">
+        <form class="toolbar" id="search-form" role="search">
+          <label class="search-box">
+            <span data-icon="search" data-size="16"></span>
+            <input id="search" type="search" name="q" placeholder="Search by name or SKU" aria-label="Search products" autocomplete="off">
+          </label>
+          <button class="btn" type="submit">Search</button>
+          <button class="btn btn-ghost" type="button" id="clear-search" hidden>Clear</button>
+        </form>
+        <div id="product-list"><p class="empty small">Loading…</p></div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<script src="/js/app.js"></script>
+<script src="/js/products.js"></script>
+</body>
+</html>
