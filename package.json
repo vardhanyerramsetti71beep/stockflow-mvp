@@ -5,7 +5,7 @@
   "main": "src/server.js",
   "type": "commonjs",
   "engines": {
-    "node": ">=22.13"
+    "node": "24.x"
   },
   "scripts": {
     "start": "node src/server.js",
@@ -13,8 +13,10 @@
     "test": "node --test"
   },
   "dependencies": {
+    "@electric-sql/pglite": "^0.5.15",
     "bcryptjs": "^2.4.3",
     "cookie-session": "^2.1.0",
-    "express": "^4.21.2"
+    "express": "^4.21.2",
+    "pg": "^8.23.1"
   }
 }

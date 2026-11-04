@@ -21,7 +21,8 @@ SF.initPage(async function (me) {
       form.elements[k].value = product[k] ?? '';
     });
     document.getElementById('meta').textContent =
-      'Last updated ' + product.updatedAt + ' UTC' + (product.lastStockNote ? ' · Note: "' + product.lastStockNote + '"' : '');
+      'Last updated ' + new Date(product.updatedAt).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' }) +
+      (product.lastStockNote ? ' · Note: "' + product.lastStockNote + '"' : '');
   }
 
   form.elements.name.focus();

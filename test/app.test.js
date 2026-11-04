@@ -1,5 +1,7 @@
 // End-to-end tests: run the real app (JSON API + static pages) against an in-memory database.
-process.env.DATABASE_FILE = ':memory:';
+delete process.env.DATABASE_URL;
+delete process.env.POSTGRES_URL;
+process.env.PGLITE_DIR = 'memory://';
 
 const { test, before, after } = require('node:test');
 const assert = require('node:assert/strict');
@@ -46,6 +48,9 @@ test('serves the HTML pages and assets', async () => {
     assert.equal(r.status, 200, page);
   }
   assert.equal((await c('GET', '/login')).status, 200); // extension-less URL works too
+  const health = await c('GET', '/api/health');
+  assert.equal(health.status, 200);
+  assert.equal(health.body.ok, true);
   assert.equal((await c('GET', '/nope')).status, 404);
 });
 

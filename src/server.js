@@ -1,9 +1,5 @@
+// Local / traditional hosting entry point. On Vercel, src/app.js is used directly.
 const app = require('./app');
-
-if (process.env.NODE_ENV === 'production' && !process.env.SESSION_SECRET) {
-  console.error('SESSION_SECRET must be set in production.');
-  process.exit(1);
-}
 
 const port = Number(process.env.PORT) || 3000;
 app.listen(port, () => {
