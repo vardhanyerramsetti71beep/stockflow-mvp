@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Settings · StockFlow</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body class="app" data-page="settings">
+<div class="shell">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="scrim" id="scrim"></div>
+  <div class="main">
+    <header class="mobile-bar" id="mobile-bar"></header>
+    <main class="container">
+      <div class="page-head">
+        <div>
+          <p class="eyebrow" data-org-name></p>
+          <h1>Settings</h1>
+        </div>
+      </div>
+
+      <form id="settings-form" class="form-layout" novalidate>
+        <section class="card">
+          <h2>Low stock alerts</h2>
+          <p class="muted small section-sub">Products without their own threshold use this number. When quantity on hand is at or below it, the product shows up under "Low stock items" on the dashboard.</p>
+          <div class="narrow">
+            <div class="field">
+              <label for="defaultLowStockThreshold">Default low stock threshold <span class="req">*</span></label>
+              <input id="defaultLowStockThreshold" name="defaultLowStockThreshold" type="number" step="1" min="0" required>
+            </div>
+          </div>
+        </section>
+        <div class="form-actions">
+          <button class="btn btn-primary" type="submit">Save settings</button>
+        </div>
+      </form>
+    </main>
+  </div>
+</div>
+
+<script src="/js/app.js"></script>
+<script src="/js/settings.js"></script>
+</body>
+</html>

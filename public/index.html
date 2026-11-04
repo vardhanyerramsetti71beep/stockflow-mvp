@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard · StockFlow</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body class="app" data-page="dashboard">
+<div class="shell">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="scrim" id="scrim"></div>
+  <div class="main">
+    <header class="mobile-bar" id="mobile-bar"></header>
+    <main class="container">
+      <div class="page-head">
+        <div>
+          <p class="eyebrow" data-org-name></p>
+          <h1>Dashboard</h1>
+        </div>
+        <a class="btn btn-primary" href="/product.html"><span data-icon="plus" data-size="16"></span> Add product</a>
+      </div>
+
+      <section class="cards">
+        <div class="card stat">
+          <span class="stat-icon tone-indigo"><span data-icon="layers"></span></span>
+          <span class="stat-label">Total products</span>
+          <span class="stat-value" id="stat-products"><span class="skeleton"></span></span>
+        </div>
+        <div class="card stat">
+          <span class="stat-icon tone-teal"><span data-icon="box"></span></span>
+          <span class="stat-label">Total units on hand</span>
+          <span class="stat-value" id="stat-units"><span class="skeleton"></span></span>
+        </div>
+        <div class="card stat" id="stat-low-card">
+          <span class="stat-icon tone-amber"><span data-icon="alert"></span></span>
+          <span class="stat-label">Low stock items</span>
+          <span class="stat-value" id="stat-low"><span class="skeleton"></span></span>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-head">
+          <div>
+            <h2>Low stock items</h2>
+            <p class="muted small">Quantity at or below the product's threshold, or the default of <b id="default-threshold">5</b>.</p>
+          </div>
+          <a class="btn btn-ghost btn-sm" href="/products.html">View all products</a>
+        </div>
+        <div id="low-stock"><p class="empty small">Loading…</p></div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<script src="/js/app.js"></script>
+<script src="/js/dashboard.js"></script>
+</body>
+</html>
