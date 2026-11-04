@@ -42,15 +42,51 @@ const SCHEMA = `
 
 const url = process.env.DATABASE_URL || process.env.POSTGRES_URL;
 
+// Errors raised while *opening* a connection (nothing was sent yet), so retrying is safe.
+// Neon's free tier sleeps when idle and the first connection after waking can be reset.
+function isConnectError(err) {
+  if (!err) return false;
+  if (['ECONNRESET', 'ECONNREFUSED', 'ETIMEDOUT', 'ENOTFOUND', 'EAI_AGAIN'].includes(err.code)) return true;
+  return /before secure TLS connection|timeout exceeded when trying to connect|Connection terminated due to connection timeout/i.test(
+    err.message || ''
+  );
+}
+
+async function withRetry(fn, attempts = 4) {
+  for (let i = 1; ; i++) {
+    try {
+      return await fn();
+    } catch (err) {
+      if (i >= attempts || !isConnectError(err)) throw err;
+      await new Promise((r) => setTimeout(r, 250 * i * i));
+    }
+  }
+}
+
 function createDriver() {
   if (url) {
     const { Pool } = require('pg');
-    const pool = new Pool({ connectionString: url, max: Number(process.env.PG_POOL_MAX) || 3 });
+    // Neon URLs use sslmode=require; pg already treats it as verify-full, so say so explicitly.
+    const connectionString = url.replace(/sslmode=(require|prefer|verify-ca)/, 'sslmode=verify-full');
+    const pool = new Pool({
+      connectionString,
+      max: Number(process.env.PG_POOL_MAX) || 3,
+      connectionTimeoutMillis: 10000,
+      idleTimeoutMillis: 10000,
+    });
+    // An idle connection dropped by the server must not crash the process.
+    pool.on('error', (err) => console.error('Postgres idle client error:', err.message));
     return {
       kind: 'postgres',
-      query: (sql, params) => pool.query(sql, params),
+      query: (sql, params) => withRetry(() => pool.connect()).then(async (client) => {
+        try {
+          return await client.query(sql, params);
+        } finally {
+          client.release();
+        }
+      }),
       async tx(fn) {
-        const client = await pool.connect();
+        const client = await withRetry(() => pool.connect());
         try {
           await client.query('BEGIN');
           const result = await fn({ query: (sql, params) => client.query(sql, params) });
@@ -63,7 +99,7 @@ function createDriver() {
           client.release();
         }
       },
-      exec: (sql) => pool.query(sql),
+      exec: (sql) => withRetry(() => pool.query(sql)),
     };
   }
 
@@ -83,15 +119,29 @@ function createDriver() {
 }
 
 const driver = createDriver();
+// Create tables lazily on first use. If that fails (e.g. database waking up), forget the
+// failure so the next request tries again instead of the instance staying broken.
 // Two serverless instances starting at once can race on CREATE ... IF NOT EXISTS; retry once.
 const RACE_CODES = new Set(['23505', '42P07', '42710']);
-const ready = driver.exec(SCHEMA).catch((err) => {
-  if (RACE_CODES.has(err.code)) return driver.exec(SCHEMA);
-  throw err;
-});
+let schemaPromise = null;
+function ready() {
+  if (!schemaPromise) {
+    schemaPromise = driver
+      .exec(SCHEMA)
+      .catch((err) => {
+        if (RACE_CODES.has(err.code)) return driver.exec(SCHEMA);
+        throw err;
+      })
+      .catch((err) => {
+        schemaPromise = null;
+        throw err;
+      });
+  }
+  return schemaPromise;
+}
 
 async function query(sql, params = []) {
-  await ready;
+  await ready();
   return driver.query(sql, params);
 }
 
@@ -104,7 +154,7 @@ async function many(sql, params) {
 }
 
 async function tx(fn) {
-  await ready;
+  await ready();
   return driver.tx(fn);
 }
 
