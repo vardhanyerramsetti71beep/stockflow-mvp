@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sign up · StockFlow</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body class="guest">
+  <div class="auth">
+    <aside class="auth-aside">
+      <a class="brand light" href="/"><span class="brand-mark"><span data-icon="box"></span></span><span>Stock<b>Flow</b></span></a>
+      <div class="auth-pitch">
+        <h2>Inventory that keeps up with you.</h2>
+        <p>Track every product, spot low stock before it hurts, and keep your whole catalogue in one tidy place.</p>
+        <ul class="ticks">
+          <li><span data-icon="check" data-size="16"></span> Products, SKUs and prices in one list</li>
+          <li><span data-icon="check" data-size="16"></span> Low-stock alerts on your dashboard</li>
+          <li><span data-icon="check" data-size="16"></span> Quick +/- stock adjustments</li>
+        </ul>
+      </div>
+      <div class="mock">
+        <div class="mock-row"><span>Ceramic Mug</span><span class="badge badge-low">3 left</span></div>
+        <div class="mock-row"><span>Notebook A5</span><span class="badge badge-ok">120</span></div>
+        <div class="mock-row"><span>Desk Lamp</span><span class="badge badge-ok">42</span></div>
+      </div>
+    </aside>
+
+    <section class="auth-panel">
+      <div class="auth-card">
+        <h1>Create your account</h1>
+        <p class="muted">Set up your organization and start tracking stock in minutes.</p>
+        <form id="signup-form" novalidate>
+          <div class="flash flash-error form-error" hidden><span data-icon="alert" data-size="16"></span><span></span></div>
+          <div class="field">
+            <label for="organizationName">Organization name <span class="req">*</span></label>
+            <input id="organizationName" name="organizationName" type="text" placeholder="My Test Store" maxlength="100" required>
+          </div>
+          <div class="field">
+            <label for="email">Email <span class="req">*</span></label>
+            <input id="email" name="email" type="email" autocomplete="email" placeholder="you@company.com" required>
+          </div>
+          <div class="grid-2">
+            <div class="field">
+              <label for="password">Password <span class="req">*</span></label>
+              <input id="password" name="password" type="password" autocomplete="new-password" minlength="8" required>
+              <small class="hint">At least 8 characters.</small>
+            </div>
+            <div class="field">
+              <label for="confirmPassword">Confirm password <span class="req">*</span></label>
+              <input id="confirmPassword" name="confirmPassword" type="password" autocomplete="new-password" required>
+            </div>
+          </div>
+          <button class="btn btn-primary btn-block btn-lg" type="submit">Create account</button>
+        </form>
+        <p class="switch">Already have an account? <a href="/login.html">Log in</a></p>
+      </div>
+    </section>
+  </div>
+
+  <script src="/js/app.js"></script>
+  <script src="/js/signup.js"></script>
+</body>
+</html>
