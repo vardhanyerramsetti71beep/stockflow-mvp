@@ -1,0 +1,20 @@
+{
+  "name": "stockflow-mvp",
+  "version": "0.1.0",
+  "description": "StockFlow MVP - a minimal multi-tenant SaaS inventory management app",
+  "main": "src/server.js",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cookie-session": "^2.1.0",
+    "express": "^4.21.2"
+  }
+}
