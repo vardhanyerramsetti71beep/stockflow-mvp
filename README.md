@@ -19,16 +19,17 @@ Users sign up with an organization, manage products (name, SKU, quantity, prices
 | FR-7 Settings | Default low-stock threshold per organization (starts at 5). |
 | Screen list | Login, Signup, Dashboard, Product list with search by name/SKU (server-side + instant client-side filter), Create/Edit form, Settings. |
 
-Extras: CSRF protection on every write, signed HTTP-only session cookies, field-level validation messages, toasts, loading states, responsive layout with a mobile menu, a 404 page, a health check at `/health`, and an automated end-to-end test suite.
+Extras: CSRF protection on every write, signed HTTP-only session cookies, field-level validation messages, toasts, loading states, responsive layout with a mobile menu, a 404 page, a health check at `/api/health`, and an automated end-to-end test suite.
 
 ## Tech stack
 
 - **Frontend:** plain HTML, CSS and vanilla JavaScript (no framework, no build step) in `public/`
 - **Backend:** Node.js + Express JSON API under `/api`
-- **Database:** SQLite via Node's built-in `node:sqlite` (no native build step)
+- **Database:** PostgreSQL. Hosted Postgres (Neon) in production via `DATABASE_URL`; locally an embedded Postgres ([PGlite](https://pglite.dev)) so there's nothing to install
 - **Auth:** Session cookies (`cookie-session`, signed, HTTP-only) + `bcryptjs`
+- **Hosting:** Vercel (static files on the CDN, Express API as a serverless function)
 
-The same Express process serves the static frontend and the API, so there's one thing to run and deploy. Each page's JavaScript calls the API with `fetch` and renders the result.
+Each page's JavaScript calls the API with `fetch` and renders the result. Sessions live in a signed cookie, so the API is stateless and works across serverless instances.
 
 ## API
 
@@ -53,14 +54,14 @@ Validation errors come back as `422` with `{ "error": "...", "errors": { "field"
 
 ## Running locally
 
-Requires **Node.js 22.13+** (Node 24 recommended).
+Requires **Node.js 24**.
 
 ```bash
 npm install
 npm start
 ```
 
-Open http://localhost:3000 and sign up. The database file is created at `data/stockflow.db`.
+Open http://localhost:3000 and sign up. Without `DATABASE_URL`, data is stored by the embedded Postgres in `data/pgdata/`. To use a real Postgres locally, set `DATABASE_URL` before `npm start`.
 
 For auto-reload while developing, use `npm run dev`.
 
@@ -76,18 +77,21 @@ The tests run the real app against an in-memory database and cover page serving,
 
 | Variable | Required | Default | Notes |
 | --- | --- | --- | --- |
-| `SESSION_SECRET` | In production | dev value | Long random string used to sign session cookies. |
-| `PORT` | No | `3000` | |
-| `NODE_ENV` | No | | Set to `production` for secure cookies. |
-| `DATABASE_FILE` | No | `data/stockflow.db` | Point this at a persistent disk in production. |
+| `SESSION_SECRET` | In production | dev value | Long random string used to sign session cookies. The app refuses to start in production without it. |
+| `DATABASE_URL` | On Vercel | embedded Postgres | Postgres connection string (`POSTGRES_URL` also works). Set automatically when you connect Neon in Vercel. |
+| `PORT` | No | `3000` | Local / traditional hosting only. |
+| `NODE_ENV` | No | | `production` enables secure cookies (Vercel sets this). |
 
-## Deploying (Render)
+The tables are created automatically on first start.
 
-1. Push this repo to GitHub (public).
-2. On https://render.com → **New → Blueprint**, select the repo. Render reads `render.yaml` and creates the web service with a generated `SESSION_SECRET`.
-3. Wait for the build, then open the `.onrender.com` URL.
+## Deploying (Vercel)
 
-Note: on Render's free plan the disk is temporary, so the SQLite data resets on each redeploy or restart. That's fine for a demo. For persistent data, add a Render disk (paid) or use Railway with a volume, and set `DATABASE_FILE` to a path on it (e.g. `/data/stockflow.db`).
+1. Import the GitHub repo in Vercel (framework is detected as **Express**). `src/app.js` becomes the API function; `public/` is served from the CDN.
+2. In the project, open **Storage → Create Database → Neon (Postgres)** and connect it. This adds `DATABASE_URL`.
+3. Add `SESSION_SECRET` under **Settings → Environment Variables**.
+4. Redeploy. Check `https://<your-app>.vercel.app/api/health` → `{"ok":true,"db":"postgres"}`.
+
+`render.yaml` is also included if you prefer Render (it uses the embedded Postgres, which resets on redeploys on the free plan).
 
 ## Project structure
 
@@ -104,9 +108,9 @@ public/                 # frontend (served as static files)
   js/app.js             # shared: API calls, layout/sidebar, icons, toasts, form errors
   js/dashboard.js  js/products.js  js/product.js  js/settings.js  js/login.js  js/signup.js
 src/                    # backend
-  server.js             # starts the HTTP server
-  app.js                # JSON API, auth, tenant scoping, static file serving
-  db.js                 # SQLite schema
+  server.js             # starts the HTTP server locally
+  app.js                # JSON API, auth, tenant scoping (Vercel entry point)
+  db.js                 # Postgres schema + driver (pg or embedded PGlite)
   validate.js           # input validation
 test/                   # end-to-end tests (node:test)
 ```
